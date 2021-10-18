@@ -1,3 +1,4 @@
+import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -12,83 +13,144 @@ class HomePage extends StatelessWidget {
   final AnimationCon _animationCon = Get.put(AnimationCon());
   final IndexController _indexController = Get.put(IndexController());
   final List<Color> _lightColor = [
-    Colors.pink.withOpacity(0.5),
-    Colors.green.withOpacity(0.5),
-    Colors.blue.withOpacity(0.5),
-    Colors.purple.withOpacity(0.5),
-    Colors.cyan.withOpacity(0.5),
-    Colors.yellow.withOpacity(0.5),
+    Colors.yellow.withOpacity(0.6),
+    Colors.green.withOpacity(0.6),
+    Colors.blue.withOpacity(0.6),
+    Colors.red.withOpacity(0.6),
+    Colors.cyan.withOpacity(0.6),
+    Colors.pink.withOpacity(0.6),
+  ];
+
+  final List<Color> _lightCol = [
+    Colors.yellow,
+    Colors.green,
+    Colors.blue,
+    Colors.red,
+    Colors.cyan,
+    Colors.pink,
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
-          decoration: const BoxDecoration(color: MyColors.blue),
-          width: double.infinity,
-          height: double.infinity,
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Obx(() => AnimatedSwitcher(
-                reverseDuration: const Duration(milliseconds: 200),
-                switchInCurve: Curves.easeIn,
-                switchOutCurve: Curves.easeIn,
-                duration: const Duration(milliseconds: 200),
-                child: _animationCon.isChaged.value
-                    ? headSec()
-                    : headFirst(context))),
+    return SafeArea(
+      child: Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
+            decoration: const BoxDecoration(color: MyColors.blue),
+            width: double.infinity,
+            height: double.infinity,
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Obx(() => AnimatedSwitcher(
+                  reverseDuration: const Duration(milliseconds: 200),
+                  switchInCurve: Curves.ease,
+                  switchOutCurve: Curves.ease,
+                  duration: const Duration(milliseconds: 200),
+                  child: _animationCon.isChaged.value
+                      ? headSec()
+                      : headFirst(context))),
+            ),
           ),
-        ),
-        Obx(
-          () => AnimatedPadding(
-            curve: Curves.easeIn,
-            padding: EdgeInsets.only(top: MediaQuery.of(context).size.height) /
-                _animationCon.paddingRate.value,
-            duration: const Duration(milliseconds: 100),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20))),
-              width: double.infinity,
-              height: double.infinity,
-              child: GestureDetector(
-                onTap: () {
-                  _animationCon.slidedown();
-                },
-                child: Obx(() => AnimatedSwitcher(
-                    reverseDuration: const Duration(milliseconds: 200),
-                    switchInCurve: Curves.easeIn,
-                    switchOutCurve: Curves.easeIn,
-                    duration: const Duration(milliseconds: 200),
-                    child: _animationCon.isChaged.value
-                        ? bottomSec()
-                        : bottomFirst())),
+          Obx(
+            () => AnimatedPadding(
+              curve: !_animationCon.isChaged.value
+                  ? const Interval(0.4, 1.0, curve: Curves.ease)
+                  : Curves.ease,
+              padding:
+                  EdgeInsets.only(top: MediaQuery.of(context).size.height) /
+                      _animationCon.paddingRate.value,
+              duration: const Duration(milliseconds: 200),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20))),
+                width: double.infinity,
+                height: double.infinity,
+                child: GestureDetector(
+                  onTap: () {
+                    _animationCon.slidedown();
+                    _animationCon.isChaged.value = true;
+                  },
+                  child: Obx(() => AnimatedSwitcher(
+                      reverseDuration: const Duration(milliseconds: 200),
+                      switchInCurve: Curves.easeIn,
+                      switchOutCurve: Curves.easeIn,
+                      duration: const Duration(milliseconds: 200),
+                      child: _animationCon.isChaged.value
+                          ? bottomSec()
+                          : bottomFirst())),
+                ),
               ),
             ),
           ),
-        ),
-        Obx(() => AnimatedOpacity(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeIn,
-              opacity: _animationCon.isChaged.value ? 1 : 0,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  right: 20,
-                ),
-                child: Align(
-                  child: SvgPicture.asset(
-                    'asset/svg/light bulb.svg',
+          Obx(() => AnimatedOpacity(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.ease,
+                opacity: _animationCon.isChaged.value ? 1 : 0,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    right: 20,
                   ),
-                  alignment: Alignment.topRight,
+                  child: Align(
+                    child: Stack(
+                      children: [
+                        SvgPicture.asset(
+                          'asset/svg/light/top.svg',
+                        ),
+                        AnimatedOpacity(
+                          opacity: _indexController.sliderValue / 5,
+                          duration: const Duration(milliseconds: 50),
+                          child: AnimatedPadding(
+                            duration: const Duration(milliseconds: 200),
+                            curve: _animationCon.isChaged.value
+                                ? const Interval(0.6, 1.0, curve: Curves.easeIn)
+                                : Curves.easeIn,
+                            padding: EdgeInsets.only(
+                                top: _animationCon.lightPadding.value),
+                            child: SvgPicture.asset(
+                              'asset/svg/light/light.svg',
+                              color:
+                                  _lightCol[_indexController.colorIndex.value],
+                            ),
+                          ),
+                        ),
+                        AnimatedPadding(
+                          duration: const Duration(milliseconds: 200),
+                          curve: _animationCon.isChaged.value
+                              ? const Interval(0.6, 1.0, curve: Curves.easeIn)
+                              : Curves.easeIn,
+                          padding: EdgeInsets.only(
+                              top: _animationCon.lightPadding.value),
+                          child: SvgPicture.asset(
+                            'asset/svg/light/middle.svg',
+                          ),
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.topRight,
+                  ),
                 ),
-              ),
-            ))
-      ],
+              )),
+          Positioned(
+              right: 20,
+              top: MediaQuery.of(context).size.height / 2.5 - 15,
+              child: Obx(() => AnimatedOpacity(
+                    opacity: _animationCon.isChaged.value ? 1 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30)),
+                        child: SvgPicture.asset(
+                            'asset/svg/Icon awesome-power-off.svg')),
+                  )))
+        ],
+      ),
     );
   }
 
@@ -136,6 +198,7 @@ class HomePage extends StatelessWidget {
           child: IconButton(
               onPressed: () {
                 _animationCon.slideup();
+                _animationCon.isChaged.value = false;
               },
               icon: SvgPicture.asset(
                   'asset/svg/Icon ionic-md-arrow-round-back.svg')),
@@ -160,7 +223,7 @@ class HomePage extends StatelessWidget {
           ),
         ),
         const SizedBox(
-          height: 50,
+          height: 65,
         ),
         SlideTransition(
           position: _animationCon.animation,
@@ -180,25 +243,21 @@ class HomePage extends StatelessWidget {
                           width: MediaQuery.of(context).size.width / 3,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: _animationCon.isLightBtn.value == true &&
-                                      _animationCon.lightbtnIndex.value == index
+                              color: _animationCon.lightbtnIndex.value == index
                                   ? MyColors.deepBlue
                                   : Colors.white),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              SvgPicture.asset(_animationCon.isLightBtn.value ==
-                                          true &&
-                                      _animationCon.lightbtnIndex.value == index
-                                  ? 'asset/svg/surface2.svg'
-                                  : 'asset/svg/surface1.svg'),
+                              SvgPicture.asset(
+                                  _animationCon.lightbtnIndex.value == index
+                                      ? 'asset/svg/surface2.svg'
+                                      : 'asset/svg/surface1.svg'),
                               Text(
                                 "Main Light",
                                 style: TextStyle(
-                                    color: _animationCon.isLightBtn.value ==
-                                                true &&
-                                            _animationCon.lightbtnIndex.value ==
-                                                index
+                                    color: _animationCon.lightbtnIndex.value ==
+                                            index
                                         ? Colors.white
                                         : MyColors.deepBlue,
                                     fontWeight: FontWeight.bold),
@@ -241,30 +300,35 @@ class HomePage extends StatelessWidget {
             childAspectRatio: 1.2,
             crossAxisCount: 2,
             children: List.generate(6, (index) {
-              return Column(
-                children: [
-                  SvgPicture.asset(RoomController().rooms[index].asset!),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    RoomController().rooms[index].name!,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, letterSpacing: 1),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    RoomController().rooms[index].lightsCount.toString() +
-                        " Lights",
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.amber,
-                        fontSize: 12),
-                    textAlign: TextAlign.start,
-                  ),
-                ],
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    SvgPicture.asset(RoomController().rooms[index].asset!),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      RoomController().rooms[index].name!,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, letterSpacing: 1),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      RoomController().rooms[index].lightsCount.toString() +
+                          " Lights",
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.amber,
+                          fontSize: 12),
+                      textAlign: TextAlign.start,
+                    ),
+                  ],
+                ),
               );
             }),
           ),
@@ -323,17 +387,23 @@ class HomePage extends StatelessWidget {
           height: 30,
           child: ListView.builder(
             itemBuilder: (context, index) {
-              return Obx(() => AnimatedPadding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: _animationCon.colorPadding.value),
-                    duration: const Duration(milliseconds: 100),
-                    child: Container(
-                      width: 30,
-                      decoration: BoxDecoration(
+              return GestureDetector(
+                onTap: () {
+                  _indexController.colorIndex.value = index;
+                },
+                child: Obx(() => AnimatedPadding(
+                      duration: const Duration(milliseconds: 200),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: _animationCon.colorPadding.value),
+                      child: Container(
+                        width: 30,
+                        decoration: BoxDecoration(
                           color: _lightColor[index],
-                          borderRadius: BorderRadius.circular(50)),
-                    ),
-                  ));
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                      ),
+                    )),
+              );
             },
             scrollDirection: Axis.horizontal,
             itemCount: 6,
